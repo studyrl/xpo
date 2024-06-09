@@ -41,7 +41,7 @@ class Actor(torch.nn.Module):
         # We create this config even if we don't use this in the future because if the global variable changes,
         # it will affect the behavior of the model initialization.
         if deepspeed_config is not None and deepspeed_config["zero_optimization"]["stage"] == 3:
-            hf_deepspeed_config = HfDeepSpeedConfig(deepspeed_config)
+            _ = HfDeepSpeedConfig(deepspeed_config)
 
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
