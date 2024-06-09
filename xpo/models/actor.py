@@ -96,7 +96,6 @@ class Actor(torch.nn.Module):
         input_len: int,
         eos_token_id: int,
         pad_token_id: int,
-        padding_side: str = "right",
     ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Postprocess generated sequences.
@@ -125,9 +124,6 @@ class Actor(torch.nn.Module):
         References:
             https://github.com/OpenLLMAI/OpenRLHF/blob/2cbc9416731a09880df1d5ae8de71e23c4d272b3/openrlhf/models/actor.py#L138
         """
-
-        assert padding_side == "right", "Only right padding is supported for now."
-
         attention_mask = (sequences.ne(eos_token_id) & sequences.ne(pad_token_id)).to(dtype=torch.long)
         seq_length = attention_mask.size(1)
 
@@ -183,6 +179,7 @@ class Actor(torch.nn.Module):
         References:
             https://github.com/OpenLLMAI/OpenRLHF/issues/217
         """
+        # TODO: check padding side compatibility
         position_ids = attention_mask.long().cumsum(-1) - 1
         position_ids.masked_fill_(attention_mask == 0, 1)
         output = self.model(sequences, attention_mask=attention_mask, position_ids=position_ids)
